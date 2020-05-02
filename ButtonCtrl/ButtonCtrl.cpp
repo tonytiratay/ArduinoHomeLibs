@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include "ButtonCtrl.h"
 
+
 ButtonCtrl::ButtonCtrl(int pin)
 {
   pinMode(pin, INPUT);
@@ -9,14 +10,18 @@ ButtonCtrl::ButtonCtrl(int pin)
   _buttonLongPressed = false;
   _buttonLongTimer = 0;
   _longPressTime = 1000;
-  _modes = 1;
-  _mode = 0;
+
 }
+
+void (*pointerOnPress)();
+void (*pointerOnLongPress)();
 
 void ButtonCtrl::loop()
 {
   _handlePress();
 }
+
+
 
 void ButtonCtrl::_handlePress()
 {
@@ -31,12 +36,28 @@ void ButtonCtrl::_handlePress()
       }
   } else {
       if(_buttonPressed && !_buttonLongPressed){
-        _changeMode();
-    }
+        pointerOnPress();
+      }
+      
+      if(_buttonLongPressed){
+        pointerOnLongPress();
+      }
+      
       _buttonLongPressed = false;
 			_buttonPressed = false;
 		}
 }
+
+void ButtonCtrl::onPress(void (*func)())
+{
+  pointerOnPress = func;
+}
+
+void ButtonCtrl::onLongPress(void (*func)())
+{
+  pointerOnLongPress = func;
+}
+
 
 bool ButtonCtrl::isPressed()
 {
@@ -50,28 +71,4 @@ bool ButtonCtrl::isLongPressed()
 }
 
 
-void ButtonCtrl::setModes(int modes)
-{
-  _modes = modes;
-}
 
-void ButtonCtrl::setMode(int mode)
-{
-  _mode = mode;
-}
-
-int ButtonCtrl::getMode()
-{
-  return _mode;
-}
-
-
-void ButtonCtrl::_changeMode()
-{
-  
-  if(_mode == _modes){
-    _mode = 0;
-  } else {
-    _mode++;
-  }
-}

@@ -9,16 +9,16 @@
 
 #include "Arduino.h"
 
+
 class ButtonCtrl 
 {
   public:
     ButtonCtrl(int);
     bool isPressed();
     bool isLongPressed();
-    void setModes(int);
-    void setMode(int);
-    int getMode();
     void loop();
+    void onPress(void (*func)());
+    void onLongPress(void (*func)());
     
   private:
     int _pin;
@@ -26,9 +26,6 @@ class ButtonCtrl
     bool _buttonLongPressed;
     unsigned long _buttonLongTimer;
     int _longPressTime;
-    int _modes;
-    int _mode;
-    void _changeMode();
     void _handlePress();
 };
 
